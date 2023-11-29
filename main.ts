@@ -15,7 +15,7 @@ try{  // Conexión a la base de datos
   
   if(!MONGO_URL) {
       console.error("MONGO_URL must be provided");
-      Deno.exit(1);
+      throw new GraphQLError("MONGO_URL must be provided");
   }
   
   await mongoose.connect(MONGO_URL);
