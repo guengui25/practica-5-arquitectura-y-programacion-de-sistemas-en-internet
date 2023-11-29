@@ -1,40 +1,40 @@
-//=============================================
-// https://docs.deno.com/runtime/tutorials/how_to_with_npm/apollo
-//=============================================
-// IMPORTS
-// =============================================
-import { ApolloServer } from "npm:@apollo/server@^4.1";
-import { startStandaloneServer } from "npm:@apollo/server@4.1/standalone";
-import { graphql } from "npm:graphql@16.6";
-
-import { typeDefs } from "./schema.ts";
-import { resolvers } from "./resolvers.ts";
+import { ApolloServer } from "@apollo/server";
+import { startStandaloneServer } from "@apollo/server/standalone";
+import { GraphQLError } from "graphql";
 
 import mongoose from "mongoose";
 
-//=============================================
-try{
-    const MONGO_URL = Deno.env.get("MONGO_URL"); // Cargo el .env
+import { typeDefs } from "./GraphQL/typeDefs.ts";
 
-    if(!MONGO_URL) {
-        console.error("MONGO_URL must be provided");
-        Deno.exit(1);
-    }
+import { Mutation } from "./resolvers/mutations.ts";
+import { Query } from "./resolvers/query.ts";
 
-    await mongoose.connect(MONGO_URL); // Me conecto a la base de datos
-    
-    const server = new ApolloServer({
-      typeDefs,
-      resolvers,
-    });
-    
-    const { url } = await startStandaloneServer(server, {
-      listen: { port: 3000 },
-    });
-    
-    console.log(`Server running on: ${url}`);
-
-
-} catch(e) {
-    console.error(e);
+try{  // Conexión a la base de datos
+  
+  const MONGO_URL = Deno.env.get("MONGO_URL");
+  
+  if(!MONGO_URL) {
+      console.error("MONGO_URL must be provided");
+      Deno.exit(1);
+  }
+  
+  await mongoose.connect(MONGO_URL);
+  
+  // Los resolvers son las funciones que se ejecutan cuando se hace una petición -> Se definen en resolvers/query.ts y resolvers/mutations.ts
+  
+  const resolvers = { Mutation, Query};
+  
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers: resolvers,
+  });
+  
+  const { url } = await startStandaloneServer(server, {listen: { port: 3000 }}); // Se pone el puerto 3000
+  
+  console.log(`🛸 Server ready at ${url}`);
 }
+catch(error){
+  console.error(error);
+  Deno.exit(1);
+}
+
