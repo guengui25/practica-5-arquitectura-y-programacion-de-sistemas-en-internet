@@ -6,30 +6,63 @@ export const typeDefs = `#graphql
   
   # Cuando el tipo es obligatorio se pone -> ! ; Cuando es optativo no se pone nada
 
-  type Pet {
+  type Usuario {
     id: ID!
-    name: String!
-    breed: String!
+    nombre: String!
+    correo_e: String!
+    coleccion: [Coleccion!]!
   }
-  
+
+  type Comic {
+    id: ID!
+    titulo: String!
+    descripcion: String!
+    formato: String!
+  }
+
+  type Coleccion {
+    id: ID!
+    nombre: String!
+    comics: [Comic!]!
+  }
+
   # Query -> son las funciones para las peticiones de datos
 
   type Query {
-    pets (breed:String) : [Pet!]!   # Pide todas las mascotas -> Devuelve un array [Pet] (Pet de graphql)
-                                    # Agrego un argumento a la query pets -> Devuelve todas las mascotas de una raza determinada 
-                                      # si está el argumento, si no, devuelve todas las mascotas
 
-    pet(id: ID!): Pet!    # Pide una mascota por id
-                              # Recibe un id de tipo ID! y SIEMPRE va a devolver un ID -> Por la exclamación
+    usuario(id: ID!): Usuario! # Pide un usuario por id -> Devuelve un Usuario
+
+    usuarios: [Usuario!]! # Pide todos los usuarios -> Devuelve un array [Usuario] (Usuario de graphql)
+
+    comic(id: ID!): Comic! # Pide un comic por id -> Devuelve un Comic
+
+    comics: [Comic!]! # Pide todos los comics -> Devuelve un array [Comic] (Comic de graphql)
   }
   
   # Mutation -> son las funciones para las peticiones de modificación de datos
 
   type Mutation {
-    addPet(name: String!, breed: String!): Pet! # Añade una mascota -> Devuelve un Pet
+    
+    addUsuario(nombre: String!, correo_e: String!, coleccion: [String!]!): Usuario! # Añade un usuario -> Devuelve un Usuario
 
-    deletePet(id: ID!): Pet! # Borra una mascota -> Devuelve un Pet 
+    updateUsuario(id: ID!, nombre: String!, correo_e: String!,coleccion: [String!]!): Usuario! # Actualiza un usuario -> Devuelve un Usuario
 
-    updatePet(id: ID!, name: String!, breed: String!): Pet! # Actualiza una mascota -> Devuelve un Pet
+    deleteUsuario(id: ID!): Usuario! # Borra un usuario -> Devuelve un Usuario
+
+    # ====================================================================================================
+
+    addColeccion(nombre: String!, comics: [String!]!): Coleccion! # Añade una coleccion -> Devuelve una Coleccion
+
+    updateColeccion(id: ID!, nombre: String!, comics: [String!]!): Coleccion! # Actualiza una coleccion -> Devuelve una Coleccion
+
+    deleteColeccion(id: ID!): Coleccion! # Borra una coleccion -> Devuelve una Coleccion
+
+    # ====================================================================================================
+
+    addComic(titulo: String!, descripcion: String!, formato: String!): Comic! # Añade un comic -> Devuelve un Comic
+
+    updateComic(id: ID!, titulo: String!, descripcion: String!, formato: String!): Comic! # Actualiza un comic -> Devuelve un Comic
+
+    deleteComic(id: ID!): Comic! # Borra un comic -> Devuelve un Comic
   }
 `;

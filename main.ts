@@ -9,6 +9,8 @@ import { typeDefs } from "./GraphQL/typeDefs.ts";
 import { Mutation } from "./resolvers/mutations.ts";
 import { Query } from "./resolvers/query.ts";
 
+import { Usuario,Coleccion } from "./resolvers/encadenados.ts";
+
 try{  // Conexión a la base de datos
   
   const MONGO_URL = Deno.env.get("MONGO_URL");
@@ -26,7 +28,7 @@ try{  // Conexión a la base de datos
   
   const server = new ApolloServer({
     typeDefs,
-    resolvers: resolvers,
+    resolvers: resolvers,Usuario,Coleccion,
   });
   
   const { url } = await startStandaloneServer(server, {listen: { port: 3000 }}); // Se pone el puerto 3000

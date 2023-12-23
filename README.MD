@@ -3,7 +3,7 @@ Se utilizarán tres tipos principales: Usuario, Comic y Colección de Comics.
 
 ## Tipos de Datos:
 1. Usuario:
-   - Atributos: `id`, `nombre`, `correoElectrónico`, 'colección de comics.
+   - Atributos: `id`, `nombre`, `correoElectrónico`, `colección de comics`.
    - Objetivo: Gestionar información sobre usuarios que pueden tener cómics asociados.
 
 2. Comic:
@@ -31,7 +31,9 @@ Se utilizarán tres tipos principales: Usuario, Comic y Colección de Comics.
 
 ## Encadenado de Información:
 
-Se esperan consultas GraphQL que permitan obtener información encadenada. Por ejemplo, en una colección de un usuario guardaremos los comics como un array de IDs y después lo devolveremos como un objeto completo gracias a un encadenado.
+Se esperan consultas GraphQL que permitan obtener información encadenada. 
+
+**Por ejemplo, en una colección de un usuario guardaremos los comics como un array de IDs y después lo devolveremos como un objeto completo gracias a un encadenado.**
 
 
 -----------------------------------------------

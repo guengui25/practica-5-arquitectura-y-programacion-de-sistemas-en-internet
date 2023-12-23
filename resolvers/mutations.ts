@@ -1,74 +1,177 @@
-import { Pet } from "../types.ts"; // Importo el tipo de typescript
+import { mongoose } from "mongoose";
+
+import { Usuario,Comic,Coleccion } from "../types.ts"; // Importo el tipo de typescript
 
 import { GraphQLError } from "graphql"; // Importo el tipo de error de graphql
 
-import PetModel from "../DB/pet.ts"; // Importo el modelo de la base de datos
-
+import { UsuarioModel,UsuarioModelType } from "../DB/usuario.ts";
+import { ComicModel, ComicModelType } from "../DB/comic.ts";
+import { ColeccionModel, ColeccionModelType } from "../DB/coleccion.ts";
 
 export const Mutation = {
 
-    addPet: async (_: unknown, args: {name: string; breed: string }) => {
-        try{
-            if(!args.name || !args.breed){
-                throw new GraphQLError("Name and breed are required fields", {
-                    extensions: { code: "BAD_USER_INPUT" },
-                });
-            }
+    // Mutaciones de Usuario
+    
+    addUsuario: async (_:unknown, args: {nombre: string, correo_e:string, coleccion:String[]}): Promise<UsuarioModelType>  => {
 
-            const newPet = new PetModel({ name: args.name, breed: args.breed}); // Creo una nueva mascota con los datos dados
-
-            await newPet.save(); // Guardo la mascota en la base de datos
-
-            return newPet; // Devuelvo la mascota guardada
-        }
-        catch(error){
-            console.error(error);
-            throw new GraphQLError(`Error saving pet with name ${args.name}`, {
-                extensions: { code: "INTERNAL_SERVER_ERROR" },
-            });
-        }
-    },
-
-    deletePet: async (_: unknown, args: { id: string }) => {
+        const { nombre, correo_e, coleccion } = args;
 
         try{
-            const pet = await PetModel.findByIdAndDelete(args.id).exec(); // Busco la mascota por id y la elimino
+            const id_coleccion = coleccion.map(coleccionID => new mongoose.Types.ObjectId(coleccionID)); // Convierto los IDs de coleccion a tipo ObjectId
 
-            return pet;
-        }
-        catch(error){
-            console.error(error);
-            throw new GraphQLError(`Error deleting pet with id ${args.id}`, {
-                extensions: { code: "INTERNAL_SERVER_ERROR" },
+            const usuario = new UsuarioModel({
+                nombre,
+                correo_e,
+                id_coleccion,
             });
+    
+            await usuario.save();
+    
+            return usuario;
+        }catch(e){
+            throw new GraphQLError(e);
         }
+        
+    },
+    
+    updateUsuario: async (_:unknown, args: {id:string, nombre: string, correo_e:string, coleccion:String[]}): Promise<UsuarioModelType>  => {
+
+        const { id, nombre, correo_e, coleccion } = args;
+        
+        const id_coleccion = coleccion.map(coleccionID => new mongoose.Types.ObjectId(coleccionID)); // Convierto los IDs de coleccion a tipo ObjectId
+
+        const usuario = await UsuarioModel.findByIdAndUpdate(
+        id,
+        { nombre, correo_e, id_coleccion },
+        { new: true, runValidators: true }
+        );
+
+
+        if (!usuario) {
+            throw new GraphQLError("No existe el usuario");
+        }
+
+        return usuario;
     },
 
-    updatePet: async (_: unknown, args: { id: string; name: string; breed: string }) => {
+    deleteUsuario: async (_:unknown, args: {id:string}): Promise<UsuarioModelType>  => {
+
+        const { id } = args;
+
+        const usuario = await UsuarioModel.findByIdAndDelete(id);
+
+        
+        if (!usuario) {
+            throw new GraphQLError("No existe el usuario");
+        }
+
+        return usuario;
+    },
+    
+    // Mutaciones de Coleccion
+
+    addColeccion: async (_:unknown, args: {nombre: string, comics:String[]}): Promise<ColeccionModelType>  => {
+
+        const { nombre, comics } = args;
         
         try{
-            if(!args.id || !args.name || !args.breed){
-                throw new GraphQLError("Name and breed are required fields", {
-                    extensions: { code: "BAD_USER_INPUT" },
-                });
-            }
-
-            const updatedPet = await PetModel.findByIdAndUpdate( // Actualizo la persona con el dni dado
-                args.id , // Busco la persona con el dni dado
-
-                { name: args.name, breed: args.breed }, // Actualizo los datos de la mascota
-
-                { new: true } // Con new: true, devuelvo la persona actualizada
-
-                ).exec(); // Ejecuto la funcion
-
-            return updatedPet;
-        }
-        catch(error){
-            console.error(error);
-            throw new GraphQLError(`Error updating pet with id ${args.id}`, {
-                extensions: { code: "INTERNAL_SERVER_ERROR" },
+            const id_comics = comics.map(comicId => new mongoose.Types.ObjectId(comicId)); // Convierto los IDs de cómics a tipo ObjectId
+  
+            const coleccion = new ColeccionModel({
+                nombre,
+                id_comics,
             });
+
+        await coleccion.save();
+
+        
+
+        return coleccion;
+
+        }catch(e){
+            throw new GraphQLError(e);
         }
     },
+
+    updateColeccion: async (_:unknown, args: {id:string, nombre: string, comics:String[] }): Promise<ColeccionModelType>  => {
+
+        const { id, nombre, comics } = args;
+
+        const id_comics = comics.map(comicId => new mongoose.Types.ObjectId(comicId)); // Convierto los IDs de cómics a tipo ObjectId
+
+
+        const coleccion = await ColeccionModel.findByIdAndUpdate(
+        id,
+        { nombre, id_comics },
+        { new: true, runValidators: true }
+        );
+    
+        if (!coleccion) {
+            throw new GraphQLError("No existe la coleccion");
+        }
+
+        return coleccion;
+    },
+
+    deleteColeccion: async (_:unknown, args: {id:string}): Promise<ColeccionModelType>  => {
+
+        const { id } = args;
+
+        const coleccion = await ColeccionModel.findByIdAndDelete(id);
+
+        
+        if (!coleccion) {
+            throw new GraphQLError("No existe la coleccion");
+        }
+
+        return coleccion;
+    },
+
+    // Mutaciones de Comic
+    
+    addComic: async (_:unknown, args: {titulo: string, descripcion:string, formato:string}): Promise<ComicModelType>  => {
+
+        const { titulo, descripcion, formato } = args;
+
+        const comic = new ComicModel({
+        titulo,
+        descripcion,
+        formato,
+        });
+
+        await comic.save();
+
+        return comic;
+    },
+
+    updateComic: async (_:unknown, args: {id:string, titulo: string, descripcion:string, formato:string}): Promise<ComicModelType>  => {
+
+        const { id, titulo, descripcion, formato } = args;
+
+        const comic = await ComicModel.findByIdAndUpdate(
+        id,
+        { titulo, descripcion, formato },
+        { new: true }
+        );
+        
+        if (!comic) {
+            throw new GraphQLError("No existe el comic");
+        }
+
+        return comic;
+    },
+
+    deleteComic: async (_:unknown, args: {id:string}): Promise<ComicModelType>  => {
+
+        const { id } = args;
+
+        const comic = await ComicModel.findByIdAndDelete(id);
+
+        if (!comic) {
+            throw new GraphQLError("No existe el comic");
+        }
+
+        return comic;
+    }
+
 };
