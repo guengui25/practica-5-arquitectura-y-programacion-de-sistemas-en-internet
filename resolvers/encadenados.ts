@@ -25,7 +25,7 @@ export const Coleccion = {
 
         const comics = await ComicModel.find({ _id:{$in: parent.id_comics }});
         
-        console.log(comics);
+        //console.log(comics);
 
         if (!comics) {
             throw new GraphQLError("No existen comics");

@@ -43,7 +43,7 @@ export const Mutation = {
         const usuario = await UsuarioModel.findByIdAndUpdate(
         id,
         { nombre, correo_e, id_coleccion },
-        { new: true, runValidators: true }
+        { new: true, runValidators: true } // Se ejecutan las validaciones del esquema de la base de datos al actualizar
         );
 
 
@@ -103,7 +103,7 @@ export const Mutation = {
         const coleccion = await ColeccionModel.findByIdAndUpdate(
         id,
         { nombre, id_comics },
-        { new: true, runValidators: true }
+        { new: true, runValidators: true }  // Se ejecutan las validaciones del esquema de la base de datos al actualizar
         );
     
         if (!coleccion) {
@@ -117,9 +117,8 @@ export const Mutation = {
 
         const { id } = args;
 
-        const coleccion = await ColeccionModel.findByIdAndDelete(id);
+        const coleccion = await ColeccionModel.findOneAndDelete({ _id: id });
 
-        
         if (!coleccion) {
             throw new GraphQLError("No existe la coleccion");
         }
@@ -165,7 +164,7 @@ export const Mutation = {
 
         const { id } = args;
 
-        const comic = await ComicModel.findByIdAndDelete(id);
+        const comic = await ComicModel.findOneAndDelete({ _id: id });   // Busco el comic por su ID y lo elimino -> Como uso post para borrarlo de las colecciones, no hace falta que lo borre de las colecciones aquí
 
         if (!comic) {
             throw new GraphQLError("No existe el comic");
