@@ -28,7 +28,13 @@ try{  // Conexión a la base de datos
   
   const server = new ApolloServer({
     typeDefs,
-    resolvers: resolvers,Usuario,Coleccion,
+    resolvers:{
+      Query,
+      Mutation,
+      Usuario,
+      Coleccion,
+    }
+
   });
   
   const { url } = await startStandaloneServer(server, {listen: { port: 3000 }}); // Se pone el puerto 3000

@@ -1,35 +1,36 @@
 import { UsuarioModel,UsuarioModelType } from "../DB/usuario.ts";
 
 import { ColeccionModel,ColeccionModelType } from "../DB/coleccion.ts";
+import { ComicModel, ComicModelType } from "../DB/comic.ts";
 
 import { GraphQLError } from "graphql"; // Importo el tipo de error de graphql
 
-export const Usuario = {
-    coleccion: async (parent: UsuarioModelType) => {
 
-        const coleccion = await UsuarioModel.findById(parent.id).populate(
-        "coleccion"
-        );
+export const Usuario = {
+    
+    coleccion: async (parent: UsuarioModelType):Promise<ColeccionModelType[]> => {
+            
+        const coleccion = await ColeccionModel.find({ _id:{$in: parent.coleccion }});
         
         if (!coleccion) {
             throw new GraphQLError("No existe la coleccion");
         }
 
-        return coleccion.coleccion;
+        return coleccion;
     },
 };
 
 export const Coleccion = {
-    comics: async (parent: ColeccionModelType) => {
+    comics: async (parent: ColeccionModelType):Promise<ComicModelType[]> => {
 
-        const comics = await ColeccionModel.findById(parent.id).populate(
-        "comics"
-        );
+        const comics = await ComicModel.find({ _id:{$in: parent.id_comics }});
         
+        console.log(comics);
+
         if (!comics) {
             throw new GraphQLError("No existen comics");
         }
 
-        return comics.comics;
+        return comics;
     },
 };

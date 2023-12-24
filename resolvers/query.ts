@@ -1,4 +1,4 @@
-import { Usuario,Comic } from "../types.ts";
+import { Usuario,Comic,Coleccion } from "../types.ts";
 
 import { GraphQLError } from "graphql"; // Importo el tipo de error de graphql
 
@@ -13,21 +13,49 @@ export const Query = {
     usuario: async (_:unknown, args: {id:string}): Promise<UsuarioModelType>  => {
 
         const { id } = args;
+        try{
+            const usuario_db = await UsuarioModel.findById(id);
 
-        const usuario = await UsuarioModel.findById(id);
+            if (!usuario_db) {
+                throw new GraphQLError("No existe el usuario");
+            }
 
-        if (!usuario) {
-            throw new GraphQLError("No existe el usuario");
+            const Usuario = {
+                id: usuario_db._id,
+                nombre: usuario_db.nombre,
+                correo_e: usuario_db.correo_e,
+                coleccion: usuario_db.id_coleccion,
+            }
+
+            //console.log(Usuario);
+
+            return Usuario;
+
+        }catch(e){
+            throw new GraphQLError(e);
         }
-
-        return usuario;
     },
     
     usuarios: async (): Promise<UsuarioModelType[]>  => {
 
-        const usuarios = await UsuarioModel.find();
+        try{
+            const usuarios_db = await UsuarioModel.find();
 
-        return usuarios;
+            const usuarios = usuarios_db.map((usuario_db:UsuarioModelType) => {
+                const Usuario = {
+                    id: usuario_db._id,
+                    nombre: usuario_db.nombre,
+                    correo_e: usuario_db.correo_e,
+                    coleccion: usuario_db.id_coleccion,
+                }
+                return Usuario;
+            });
+
+            return usuarios;
+        }
+        catch(e){
+            throw new GraphQLError(e);
+        }
     },
     
     // Consultas de Comic
